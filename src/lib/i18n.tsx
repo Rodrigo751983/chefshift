@@ -1074,10 +1074,10 @@ export function LangToggle({ clair }: { clair?: boolean }) {
   const actif = clair ? '#fff' : '#5f7052'
   const inactif = clair ? 'rgba(255,255,255,0.55)' : '#9aa39b'
   return (
-    <span style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
-      <button type="button" style={{ ...base, color: lang === 'nl' ? actif : inactif }} onClick={() => setLang('nl')}>NL</button>
-      <span style={{ color: inactif }}>·</span>
-      <button type="button" style={{ ...base, color: lang === 'en' ? actif : inactif }} onClick={() => setLang('en')}>EN</button>
+    <span role="group" aria-label="Language / Taal" style={{ display: 'inline-flex', alignItems: 'center', gap: 2 }}>
+      <button type="button" aria-pressed={lang === 'nl'} style={{ ...base, color: lang === 'nl' ? actif : inactif }} onClick={() => setLang('nl')}>NL</button>
+      <span aria-hidden="true" style={{ color: inactif }}>·</span>
+      <button type="button" aria-pressed={lang === 'en'} style={{ ...base, color: lang === 'en' ? actif : inactif }} onClick={() => setLang('en')}>EN</button>
     </span>
   )
 }

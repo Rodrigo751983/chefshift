@@ -225,19 +225,30 @@ export default function ShiftCard({
             {etat === 'erreur' && <div style={{ color: '#b91c1c', fontSize: 12, marginTop: 5, fontWeight: 600 }}>{message}</div>}
           </div>
         )}
-        {detailHref && (
-          <div style={{ display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap', color: '#5f7052', fontWeight: 700, fontSize: 13 }}>
-            {showApply
-              ? t('details')
-              /* Rien a choisir sur une shift expiree ou annulee : le libelle
-                 "Kiezen" promettrait une action qui n'existe plus. */
-              : shift.status === 'EXPIRED' || shift.status === 'CANCELLED'
-              ? t('details')
-              : shift.status === 'CONFIRMED'
-              ? t('status_confirmed')
-              : t('choose')} <Ico n="arrow" s={13} />
-          </div>
-        )}
+        {detailHref && (() => {
+          const libelle = showApply
+            ? t('details')
+            /* Rien a choisir sur une shift expiree ou annulee : le libelle
+               "Kiezen" promettrait une action qui n'existe plus. */
+            : shift.status === 'EXPIRED' || shift.status === 'CANCELLED'
+            ? t('details')
+            : shift.status === 'CONFIRMED'
+            ? t('status_confirmed')
+            : t('choose')
+          const stijl: React.CSSProperties = { display: 'inline-flex', alignItems: 'center', gap: 5, whiteSpace: 'nowrap', color: '#5f7052', fontWeight: 700, fontSize: 13 }
+          // Quand le bouton "Postuler" est présent, la carte entière n'est
+          // plus le lien (voir plus bas) : ce libellé devient le vrai lien,
+          // pour ne jamais imbriquer un <button> dans un <a>.
+          return showApply ? (
+            <a href={detailHref} style={{ ...stijl, textDecoration: 'none' }}>
+              {libelle} <Ico n="arrow" s={13} />
+            </a>
+          ) : (
+            <div style={stijl}>
+              {libelle} <Ico n="arrow" s={13} />
+            </div>
+          )
+        })()}
       </div>
     </>
   )
@@ -249,8 +260,11 @@ export default function ShiftCard({
     gap: 18, flexWrap: 'wrap',
   }
 
-  // Carte entièrement cliquable si un lien de détail est fourni
-  if (detailHref) {
+  // Carte entièrement cliquable si un lien de détail est fourni — sauf
+  // quand elle contient aussi le bouton "Postuler" : un <a> ne doit jamais
+  // envelopper un <button> (HTML invalide, focus clavier ambigu). Dans ce
+  // cas le lien se limite au libellé "Details" (voir plus haut).
+  if (detailHref && !showApply) {
     return (
       <a href={detailHref} className="cs-card" style={{ ...styleCarte, textDecoration: 'none', color: 'inherit', display: 'flex' }}>
         {contenu}

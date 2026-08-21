@@ -21,7 +21,7 @@ function groupe(s: ShiftData): Exclude<Filtre, 'alle'> {
 }
 
 export default function ShiftsPage() {
-  const { t } = useT()
+  const { t, lang } = useT()
   const [shifts, setShifts] = useState<ShiftData[]>([])
   const [chargement, setChargement] = useState(true)
   const [role, setRole] = useState('')
@@ -84,23 +84,49 @@ export default function ShiftsPage() {
         background: 'rgba(255,255,255,0.88)', backdropFilter: 'blur(12px)',
         borderBottom: '1px solid #e8ebe0',
         padding: '13px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center',
+        flexWrap: 'wrap', rowGap: 8,
         position: 'sticky', top: 0, zIndex: 10,
       }}>
         <a href="/dashboard" style={{ fontWeight: 800, fontSize: 20, color: 'hsl(var(--foreground))', textDecoration: 'none', letterSpacing: -0.5 }}>
           Chef<span style={{ color: '#5f7052' }}>Shift</span>
         </a>
-        <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
+        <div style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
           <LangToggle />
-          <a href="/dashboard" className="cs-nav-link" style={{ color: '#5f7052', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
-            {t('back_dashboard')}
-          </a>
+          {(() => {
+            const label = t('back_dashboard')
+            const espace = label.indexOf(' ')
+            const fleche = espace === -1 ? label : label.slice(0, espace)
+            const reste = espace === -1 ? '' : label.slice(espace + 1)
+            return (
+              // display:inline-flex est nécessaire pour que la règle mobile
+              // (min 44x44 + centrage) ait un effet : sur un <a> inline par
+              // défaut, min-width/min-height/justify-content sont ignorés.
+              // aria-label conserve le nom accessible complet même quand le
+              // texte est masqué visuellement sur mobile (cs-nav-txt).
+              <a
+                href="/dashboard"
+                className="cs-nav-link"
+                aria-label={label}
+                style={{
+                  display: 'inline-flex', alignItems: 'center', justifyContent: 'center', gap: 6,
+                  color: '#5f7052', fontWeight: 700, fontSize: 14, textDecoration: 'none',
+                }}
+              >
+                <span aria-hidden="true">{fleche}</span>
+                <span className="cs-nav-txt" aria-hidden="true">{reste}</span>
+              </a>
+            )
+          })()}
         </div>
       </nav>
 
       <div className="cs-wrap" style={{ maxWidth: 900, margin: '0 auto', padding: '48px 24px' }}>
         <div className="cs-fade" style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: 16, marginBottom: 32 }}>
           <div>
-            <h1 style={{ fontSize: 'clamp(26px, 4vw, 36px)', fontWeight: 800, letterSpacing: -1.2 }}>
+            {/* aria-hidden pendant le chargement : un h1 vide (le texte n'est
+                pas encore résolu) serait sinon rencontré par la navigation
+                par titres d'un lecteur d'écran. */}
+            <h1 aria-hidden={!titre} style={{ fontSize: 'clamp(26px, 4vw, 36px)', fontWeight: 800, letterSpacing: -1.2 }}>
               {titre ? t(titre) : ' '}
             </h1>
             <p style={{ color: 'hsl(var(--muted-foreground))', marginTop: 6, fontSize: 15 }}>
@@ -120,36 +146,57 @@ export default function ShiftsPage() {
 
         {/* ===== Filtres par statut ===== */}
         {!chargement && voirFiltres && shifts.length > 0 && (
-          <div className="cs-fade cs-seg-rij" style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}>
-            {filtres.map(({ f, cle }) => {
-              const actif = filtre === f
-              return (
-                <button
-                  key={f}
-                  onClick={() => setFiltre(f)}
-                  className="cs-btn"
-                  style={{
-                    border: actif ? 'none' : '1.5px solid #dfe4d4',
-                    background: actif ? '#4c5e42' : 'hsl(var(--card))',
-                    color: actif ? '#fff' : '#4c5e42',
-                    borderRadius: 999, padding: '8px 16px',
-                    fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: FONT,
-                  }}
-                >
-                  {t(cle)}
-                  <span style={{
-                    marginLeft: 7, fontSize: 11.5, fontWeight: 800,
-                    background: actif ? 'rgba(255,255,255,0.25)' : '#eef2e6',
-                    color: actif ? '#fff' : '#4c5e42',
-                    padding: '2px 8px', borderRadius: 999,
-                  }}>
-                    {compte(f)}
-                  </span>
-                </button>
-              )
-            })}
-          </div>
+          <>
+            <h2 className="cs-sr-only">{lang === 'en' ? 'Filter shifts by status' : 'Shifts filteren op status'}</h2>
+            <div
+              className="cs-fade cs-seg-rij"
+              role="group"
+              aria-label={lang === 'en' ? 'Filter by status' : 'Filteren op status'}
+              style={{ display: 'flex', gap: 8, flexWrap: 'wrap', marginBottom: 22 }}
+            >
+              {filtres.map(({ f, cle }) => {
+                const actif = filtre === f
+                return (
+                  <button
+                    key={f}
+                    onClick={() => setFiltre(f)}
+                    className="cs-btn"
+                    aria-pressed={actif}
+                    style={{
+                      border: actif ? 'none' : '1.5px solid #dfe4d4',
+                      background: actif ? '#4c5e42' : 'hsl(var(--card))',
+                      color: actif ? '#fff' : '#4c5e42',
+                      borderRadius: 999, padding: '8px 16px',
+                      fontWeight: 700, fontSize: 13, cursor: 'pointer', fontFamily: FONT,
+                    }}
+                  >
+                    {t(cle)}
+                    <span style={{
+                      marginLeft: 7, fontSize: 11.5, fontWeight: 800,
+                      background: actif ? 'rgba(255,255,255,0.25)' : '#eef2e6',
+                      color: actif ? '#fff' : '#4c5e42',
+                      padding: '2px 8px', borderRadius: 999,
+                    }}>
+                      {compte(f)}
+                    </span>
+                  </button>
+                )
+              })}
+            </div>
+          </>
         )}
+
+        <h2 className="cs-sr-only">{lang === 'en' ? 'Shift list' : 'Lijst met shifts'}</h2>
+        {/* Annonce discrète (lecteur d'écran) du chargement puis du nombre de
+            résultats visibles — y compris quand on change de filtre, ce qui
+            ne déclenche aucun autre changement visuel annoncé. */}
+        <div aria-live="polite" className="cs-sr-only">
+          {chargement
+            ? t('dash_loading')
+            : lang === 'en'
+            ? `${visibles.length} shift${visibles.length === 1 ? '' : 's'} shown`
+            : `${visibles.length} shift${visibles.length === 1 ? '' : 's'} weergegeven`}
+        </div>
 
         {chargement ? (
           <p style={{ color: 'hsl(var(--muted-foreground))', fontWeight: 600, textAlign: 'center', padding: 40 }}>{t('dash_loading')}</p>

@@ -79,6 +79,18 @@ body {
   color: hsl(var(--foreground));
 }
 
+/* Contenu réservé aux lecteurs d'écran : visible pour personne à l'écran,
+   mais présent dans l'arbre d'accessibilité (contrairement à display:none). */
+.cs-sr-only {
+  position: absolute;
+  width: 1px; height: 1px;
+  padding: 0; margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  white-space: nowrap;
+  border: 0;
+}
+
 /* ------------------------------------------------------------
    Surcouche sombre : uniquement les propriétés inline (bordures,
    nav translucide, labels) que les tokens ne peuvent pas atteindre.
@@ -206,11 +218,16 @@ body {
   .cs-nav-txt { display: none; }
   .cs-nav-link { min-width: 44px; min-height: 44px; justify-content: center; }
 
+  /* Barre de défilement fine et visible : sans elle, rien n'indique qu'il y a
+     d'autres filtres au-delà du bord de l'écran (pas de dégradé ni de flèche). */
   .cs-seg-rij {
     display: flex; flex-wrap: nowrap; overflow-x: auto;
-    -webkit-overflow-scrolling: touch; scrollbar-width: none; padding-bottom: 2px;
+    -webkit-overflow-scrolling: touch; padding-bottom: 6px;
+    scrollbar-width: thin; scrollbar-color: #c8d0ba transparent;
   }
-  .cs-seg-rij::-webkit-scrollbar { display: none; }
+  .cs-seg-rij::-webkit-scrollbar { height: 4px; }
+  .cs-seg-rij::-webkit-scrollbar-track { background: transparent; }
+  .cs-seg-rij::-webkit-scrollbar-thumb { background: #c8d0ba; border-radius: 999px; }
   .cs-seg-rij > * { flex-shrink: 0; }
 
   .cs-btn { min-height: 44px; }
