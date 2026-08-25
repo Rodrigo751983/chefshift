@@ -109,7 +109,20 @@ export async function POST(req: NextRequest) {
             await emailBetalingOntvangen(kok.email, invoice.shift.title, invoice.kokPayout / 100)
           }
         }
-      } catch {}
+      } catch (error) {
+        // Ne JAMAIS avaler l'erreur ici. Avant, un `catch {}` suivi d'un 200
+        // faisait croire a Stripe que l'evenement etait traite : la facture
+        // restait PENDING alors que le restaurant avait deja paye, le kok
+        // n'etait ni notifie ni paye, et rien n'apparaissait nulle part.
+        // Un 500 declenche le rejeu automatique de Stripe.
+        console.error('[stripe:webhook] echec du traitement', {
+          eventId: event.id,
+          type: event.type,
+          invoiceId,
+          error,
+        })
+        return NextResponse.json({ error: 'Webhook processing failed' }, { status: 500 })
+      }
     }
   }
 
