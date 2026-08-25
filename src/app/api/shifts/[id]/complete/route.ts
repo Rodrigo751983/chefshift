@@ -13,12 +13,21 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     const session = await getServerSession(authOptions)
     if (!session) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
 
+    // Cloturer une shift declenche la facturation : seule la zaak qui l'a
+    // publiee (ou un admin) peut le faire. Avant, la propriete n'etait
+    // verifiee que pour le role HORECA, donc n'importe quel kok inscrit
+    // pouvait cloturer la shift d'autrui et generer sa facture.
+    const estAdmin = session.user.role === 'ADMIN'
+    if (!estAdmin && session.user.role !== 'HORECA') {
+      return NextResponse.json({ error: 'Forbidden' }, { status: 403 })
+    }
+
     const shiftId = params.id
     const shift = await prisma.shift.findUnique({ where: { id: shiftId } })
     if (!shift) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
-    if (session.user.role === 'HORECA' && shift.horecaId !== session.user.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+    if (!estAdmin && shift.horecaId !== session.user.id) {
+      return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
 
     const updated = await prisma.shift.update({

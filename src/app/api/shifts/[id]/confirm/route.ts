@@ -13,11 +13,32 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     }
 
     const shiftId = params.id
-    const { kokId } = await req.json()
+    const body = await req.json().catch(() => ({}))
+    const kokId = typeof body?.kokId === 'string' ? body.kokId.trim() : ''
+    if (!kokId) {
+      return NextResponse.json({ error: 'kokId is required' }, { status: 400 })
+    }
 
     const shift = await prisma.shift.findUnique({ where: { id: shiftId } })
     if (!shift || (!isAdmin && shift.horecaId !== session.user.id)) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
+    }
+
+    // ===== kokId : jamais accepte tel quel depuis le client =====
+    // Avant, la valeur du corps de requete etait ecrite directement dans
+    // chosenKokId : on pouvait designer n'importe quel utilisateur, y compris
+    // un compte qui n'avait pas candidate — et c'est ce chosenKokId qui recoit
+    // le payout Stripe. On exige desormais une candidature reelle sur CETTE
+    // shift, faite par un compte de role KOK.
+    const candidature = await prisma.application.findFirst({
+      where: { shiftId, kokId, kok: { role: 'KOK' } },
+      select: { id: true },
+    })
+    if (!candidature) {
+      return NextResponse.json(
+        { error: 'This chef has not applied to this shift' },
+        { status: 400 }
+      )
     }
 
     const updated = await prisma.shift.update({
