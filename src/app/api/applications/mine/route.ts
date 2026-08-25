@@ -15,7 +15,8 @@ export async function GET() {
       select: { shiftId: true },
     })
     return NextResponse.json({ shiftIds: apps.map((a) => a.shiftId) })
-  } catch (error: any) {
-    return NextResponse.json({ error: error?.message || 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    console.error('[applications/mine]', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

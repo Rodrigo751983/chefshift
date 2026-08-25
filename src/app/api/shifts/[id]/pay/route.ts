@@ -166,16 +166,12 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
       })
 
       return NextResponse.json({ url: checkout.url })
-    } catch (stripeError: any) {
-      return NextResponse.json(
-        { error: `Stripe: ${stripeError?.message || 'unknown error'}` },
-        { status: 500 }
-      )
+    } catch (stripeError) {
+      console.error('[shifts/pay] Stripe', stripeError)
+      return NextResponse.json({ error: 'Payment provider error' }, { status: 500 })
     }
-  } catch (error: any) {
-    return NextResponse.json(
-      { error: error?.message || 'Internal server error' },
-      { status: 500 }
-    )
+  } catch (error) {
+    console.error('[shifts/pay]', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

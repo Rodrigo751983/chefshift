@@ -25,8 +25,9 @@ export async function POST(req: NextRequest) {
       ON CONFLICT (endpoint) DO UPDATE SET user_id = ${session.user.id}, p256dh = ${p256dh}, auth = ${auth}
     `
     return NextResponse.json({ ok: true })
-  } catch (error: any) {
-    return NextResponse.json({ error: error?.message || 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    console.error('[push/subscribe]', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -45,7 +46,8 @@ export async function DELETE(req: NextRequest) {
       DELETE FROM kok_push WHERE endpoint = ${endpoint} AND user_id = ${session.user.id}
     `
     return NextResponse.json({ ok: true })
-  } catch (error: any) {
-    return NextResponse.json({ error: error?.message || 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    console.error('[push/subscribe]', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }

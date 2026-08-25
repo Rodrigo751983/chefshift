@@ -31,8 +31,11 @@ export async function PATCH(req: NextRequest) {
 
     const body = await req.json()
     if (body.notificationId) {
-      await prisma.notification.update({
-        where: { id: body.notificationId },
+      // updateMany + userId : une notification qui n'appartient pas a
+      // l'utilisateur ne correspond a rien. Avec update({ where: { id } })
+      // on pouvait marquer lue la notification de n'importe qui.
+      await prisma.notification.updateMany({
+        where: { id: String(body.notificationId), userId: session.user.id },
         data: { isRead: true, readAt: new Date() }
       })
     } else {

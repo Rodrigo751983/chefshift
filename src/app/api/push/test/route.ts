@@ -56,9 +56,10 @@ export async function POST() {
     // Tous les abonnements de cet appareil ont expiré → le client doit se réabonner
     const code = perimes > 0 ? 'stale' : 'error'
     return NextResponse.json({ ok: false, code })
-  } catch (error: any) {
+  } catch (error) {
+    console.error('[push/test]', error)
     return NextResponse.json(
-      { ok: false, error: error?.message || 'Internal server error' },
+      { ok: false, error: 'Internal server error' },
       { status: 500 }
     )
   }

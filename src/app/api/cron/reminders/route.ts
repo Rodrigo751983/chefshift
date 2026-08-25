@@ -293,9 +293,10 @@ export async function GET(req: NextRequest) {
     const abonnements = Number(compte[0]?.n || 0)
 
     return NextResponse.json({ ok: true, envoyes, emails, rappelsFin, verlopen, betwistingenVerlopen, shiftsTrouves, abonnements, erreurs: erreurs.slice(0, 5) })
-  } catch (error: any) {
+  } catch (error) {
+    console.error('[cron/reminders]', error)
     return NextResponse.json(
-      { ok: false, error: error?.message || 'Internal server error' },
+      { ok: false, error: 'Internal server error' },
       { status: 500 }
     )
   }

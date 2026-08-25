@@ -98,8 +98,9 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
     )
 
     return NextResponse.json({ ok: true })
-  } catch (error: any) {
-    return NextResponse.json({ error: error?.message || 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    console.error('[shifts/[id]/eindtijd/betwist]', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
 
@@ -171,7 +172,8 @@ export async function PATCH(req: NextRequest, { params }: { params: { id: string
     )
 
     return NextResponse.json({ ok: true, geaccepteerd: false })
-  } catch (error: any) {
-    return NextResponse.json({ error: error?.message || 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    console.error('[shifts/[id]/eindtijd/betwist]', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
