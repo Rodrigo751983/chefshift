@@ -9,20 +9,31 @@ import {
   emailBetwistingVerlopen,
 } from '@/lib/email'
 import webpush from 'web-push'
+import { timingSafeEqual } from 'crypto'
+
+// Comparaison a temps constant (longueurs differentes = faux, sans fuite)
+function comparaisonSure(a: string, b: string): boolean {
+  const ba = Buffer.from(a)
+  const bb = Buffer.from(b)
+  if (ba.length !== bb.length) return false
+  return timingSafeEqual(ba, bb)
+}
 
 // Tables kok_push / kok_reminder : gérées par les migrations Prisma (Phase 5)
 
 type Sub = { endpoint: string; p256dh: string; auth: string }
 
 // GET : appelé par un minuteur externe (cron-job.org) toutes les 15 minutes
-// Clé acceptée via header Authorization: Bearer <secret> OU via ?secret=<secret>
+// Clé acceptée UNIQUEMENT via header : Authorization: Bearer <CRON_SECRET>
 export async function GET(req: NextRequest) {
   try {
     // Fermé par défaut : sans CRON_SECRET configuré, l'endpoint reste inaccessible.
+    // Le secret n'est plus accepté en query string (?secret=) : une URL finit
+    // dans les logs Vercel, l'historique du navigateur et l'en-tête Referer.
+    // Comparaison à temps constant pour ne rien révéler par la durée.
     const secret = (process.env.CRON_SECRET || '').trim()
-    const headerOk = req.headers.get('authorization') === `Bearer ${secret}`
-    const queryOk = req.nextUrl.searchParams.get('secret') === secret
-    if (!secret || (!headerOk && !queryOk)) {
+    const fourni = (req.headers.get('authorization') || '').replace(/^Bearer /, '')
+    if (!secret || !comparaisonSure(fourni, secret)) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
 
