@@ -5,6 +5,8 @@ import { useState } from 'react'
 import { useT, LangToggle } from '@/lib/i18n'
 import AnimStyles from '@/components/AnimStyles'
 import { Ico } from '@/components/Icons'
+import Turnstile, { TURNSTILE_SITE_KEY } from '@/components/Turnstile'
+import { registerSchema, codesErreur, messageNL } from '@/lib/validation'
 
 const FONT = '"Sora","Inter","Helvetica Neue",Arial,sans-serif'
 
@@ -22,38 +24,66 @@ export default function RegisterPage() {
   const [akkoord, setAkkoord] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
+  const [captchaToken, setCaptchaToken] = useState<string | null>(null)
+  // Incremente a chaque echec : un token Turnstile ne sert qu'une fois.
+  const [resetCaptcha, setResetCaptcha] = useState(0)
+
+  function echec(message: string) {
+    setError(message)
+    setLoading(false)
+    // Le widget doit etre rejoue : son token vient d'etre consomme ou refuse.
+    setResetCaptcha((n) => n + 1)
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
-    if (!kvkNumber.trim()) {
-      setError(t('register_kvk_required'))
-      return
-    }
     if (!akkoord) {
       setError(t('terms_required'))
       return
     }
+
+    const charge = {
+      name,
+      email,
+      password,
+      role,
+      firstName: name,
+      kvkNumber,
+      source: source || null,
+      turnstileToken: captchaToken,
+      ...(role === 'HORECA' ? { companyName: companyName || name } : {}),
+    }
+
+    // Meme schema que l'API : le message affiche ici est celui que le serveur
+    // aurait renvoye, donc pas de divergence possible entre les deux cotes.
+    const verif = registerSchema.safeParse(charge)
+    if (!verif.success) {
+      const codes = codesErreur(verif.error)
+      setError(messageNL(Object.values(codes)[0]))
+      return
+    }
+
+    // Le captcha n'est exige que s'il est configure (dev local sans cle : ignore).
+    if (TURNSTILE_SITE_KEY && !captchaToken) {
+      setError(messageNL('CAPTCHA_REQUIRED'))
+      return
+    }
+
     setLoading(true)
     try {
       const res = await fetch('/api/auth/register', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          name,
-          email,
-          password,
-          role,
-          firstName: name,
-          kvkNumber: kvkNumber.trim(),
-          source: source || null,
-          ...(role === 'HORECA' ? { companyName: companyName || name } : {}),
-        }),
+        body: JSON.stringify(charge),
       })
       if (!res.ok) {
         const data = await res.json().catch(() => ({}))
-        setError(data?.error === 'Email already registered' ? t('register_email_used') : t('register_fail'))
-        setLoading(false)
+        const code =
+          data?.error === 'VALIDATION_FAILED'
+            ? Object.values(data?.champs || {})[0]
+            : data?.error
+        echec(messageNL(typeof code === 'string' ? code : undefined))
         return
       }
       const login = await signIn('credentials', { email, password, redirect: false })
@@ -63,8 +93,7 @@ export default function RegisterPage() {
         window.location.href = '/dashboard'
       }
     } catch {
-      setError(t('register_error'))
-      setLoading(false)
+      echec(t('register_error'))
     }
   }
 
@@ -177,6 +206,8 @@ export default function RegisterPage() {
                 <a href="/privacy" target="_blank" style={{ color: '#5f7052', fontWeight: 700 }}>{t('privacy_of')}</a>
               </span>
             </label>
+
+            <Turnstile onToken={setCaptchaToken} resetSignal={resetCaptcha} />
 
             {error && (
               <p style={{ color: '#b91c1c', fontSize: 13.5, marginBottom: 16, background: '#fef2f2', padding: '10px 14px', borderRadius: 10, fontWeight: 600 }}>
