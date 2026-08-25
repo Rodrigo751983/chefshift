@@ -34,9 +34,32 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
     })
 
     if (!shift) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-    if (session.user.role === 'HORECA' && shift.horecaId !== session.user.id) {
-      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+
+    // ===== Contrôle d'accès =====
+    // Avant : la propriété n'était vérifiée que pour le rôle HORECA, si bien
+    // qu'un compte KOK pouvait lire n'importe quelle shift par son id — et avec
+    // elle le profil complet (adresse, date de naissance, btw-id) de TOUS les
+    // candidats. Règle réelle : l'admin et la zaak propriétaire voient tout ;
+    // un kok ne voit une shift que si elle est ouverte, s'il y a candidaté ou
+    // s'il est le kok choisi — et jamais les candidatures des autres.
+    const estAdmin = session.user.role === 'ADMIN'
+    const estProprietaire = shift.horecaId === session.user.id
+    const estKok = session.user.role === 'KOK'
+    const aCandidate = shift.applications.some((a) => a.kokId === session.user.id)
+    const estKokChoisi = shift.chosenKokId === session.user.id
+
+    if (!estAdmin && !estProprietaire) {
+      const kokAutorise = estKok && (shift.status === 'OPEN' || aCandidate || estKokChoisi)
+      if (!kokAutorise) {
+        return NextResponse.json({ error: 'Not found' }, { status: 404 })
+      }
     }
+
+    // Un kok ne reçoit que sa propre candidature, jamais celles des concurrents
+    const applicationsVisibles =
+      estAdmin || estProprietaire
+        ? shift.applications
+        : shift.applications.filter((a) => a.kokId === session.user.id)
 
     // Heure de fin déclarée / confirmée (table créée à la première déclaration)
     let eind = null
@@ -74,7 +97,10 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       favoriKokIds = favs.map((f) => f.kokId)
     }
 
-    return NextResponse.json({ shift: { ...shift, eind }, favoriKokIds })
+    return NextResponse.json({
+      shift: { ...shift, applications: applicationsVisibles, eind },
+      favoriKokIds,
+    })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
@@ -143,7 +169,8 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
     })
 
     return NextResponse.json({ shift: updated })
-  } catch (error: any) {
-    return NextResponse.json({ error: error?.message || 'Internal server error' }, { status: 500 })
+  } catch (error) {
+    console.error('PUT /api/shifts/[id]', error)
+    return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }
 }
