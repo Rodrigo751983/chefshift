@@ -45,17 +45,17 @@ export default function VoorwaardenPage() {
   const lijst = artikelen[l]
   const t = titres[l]
   return (
-    <main style={{ minHeight: '100vh', background: '#f6f7f2', fontFamily: FONT, color: '#23281f', padding: '48px 20px' }}>
+    <main style={{ minHeight: '100vh', background: 'hsl(var(--background))', fontFamily: FONT, color: 'hsl(var(--foreground))', padding: '48px 20px' }}>
       <div style={{ maxWidth: 760, margin: '0 auto' }}>
         <a href="/" style={{ color: '#5f7052', textDecoration: 'none', fontSize: 14, fontWeight: 600 }}>← ChefShift</a>
         <h1 style={{ fontSize: 32, fontWeight: 800, margin: '18px 0 6px', letterSpacing: '-0.5px' }}>{t.h1}</h1>
-        <p style={{ color: '#6b7263', fontSize: 14, margin: '0 0 28px' }}>{t.sub}</p>
+        <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: 14, margin: '0 0 28px' }}>{t.sub}</p>
         <div style={{ background: '#fffdf4', border: '1px solid #efe7c8', borderRadius: 14, padding: '14px 18px', fontSize: 13.5, color: '#8a7320', marginBottom: 28 }}>{t.disclaimer}</div>
         <div style={{ display: 'flex', flexDirection: 'column', gap: 14 }}>
           {lijst.map((a) => (
-            <section key={a.titre} style={{ background: '#fff', border: '1px solid #eceee3', borderRadius: 16, padding: '20px 24px', boxShadow: '0 1px 2px rgba(35,40,31,0.04)' }}>
+            <section key={a.titre} style={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 16, padding: '20px 24px', boxShadow: '0 1px 2px rgba(35,40,31,0.04)' }}>
               <h2 style={{ fontSize: 16, fontWeight: 700, margin: '0 0 8px', color: '#46553c' }}>{a.titre}</h2>
-              <p style={{ fontSize: 14.5, lineHeight: 1.7, color: '#4a5044', margin: 0 }}>{a.tekst}</p>
+              <p style={{ fontSize: 14.5, lineHeight: 1.7, color: 'hsl(var(--muted-foreground))', margin: 0 }}>{a.tekst}</p>
             </section>
           ))}
         </div>

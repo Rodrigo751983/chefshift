@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { LangToggle } from '@/lib/i18n'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const FONT = '"Sora","Inter","Helvetica Neue",Arial,sans-serif'
 
@@ -105,23 +106,24 @@ export default function FacturenPage() {
   }
 
   return (
-    <main style={{ fontFamily: FONT, background: '#f6f7f2', color: '#23281f', minHeight: '100vh' }}>
-      <nav style={{ background: '#fff', borderBottom: '1px solid #e8ebe0', padding: '14px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-        <a href="/" style={{ fontWeight: 800, fontSize: 20, color: '#23281f', textDecoration: 'none', letterSpacing: -0.5 }}>
+    <main style={{ fontFamily: FONT, background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', minHeight: '100vh' }}>
+      <nav className="cs-nav" style={{ background: '#fff', borderBottom: '1px solid #e8ebe0', padding: '14px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <a href="/" style={{ fontWeight: 800, fontSize: 20, color: 'hsl(var(--foreground))', textDecoration: 'none', letterSpacing: -0.5 }}>
           Chef<span style={{ color: '#5f7052' }}>Shift</span>
         </a>
         <LangToggle />
+        <ThemeToggle />
       </nav>
 
       <div style={{ maxWidth: 860, margin: '0 auto', padding: '40px 24px 96px' }}>
         <a href="/dashboard" style={{ color: '#5f7052', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>{t.back}</a>
         <h1 style={{ fontSize: 'clamp(28px, 4vw, 40px)', fontWeight: 800, letterSpacing: -1.2, margin: '16px 0 8px' }}>{t.title}</h1>
-        <p style={{ color: '#6b7268', fontSize: 15.5, marginBottom: 30 }}>{t.sub}</p>
+        <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: 15.5, marginBottom: 30 }}>{t.sub}</p>
 
         {fout && <p style={{ color: '#8a3226' }}>{t.login}</p>}
-        {!facturen && !fout && <p style={{ color: '#9aa39b' }}>{t.loading}</p>}
+        {!facturen && !fout && <p style={{ color: 'hsl(var(--muted-foreground))' }}>{t.loading}</p>}
         {facturen && facturen.length === 0 && !fout && (
-          <div style={{ background: '#fff', border: '1px solid #eceee3', borderRadius: 18, padding: '40px 28px', textAlign: 'center', color: '#9aa39b' }}>
+          <div style={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 18, padding: '40px 28px', textAlign: 'center', color: 'hsl(var(--muted-foreground))' }}>
             {t.empty}
           </div>
         )}
@@ -133,22 +135,22 @@ export default function FacturenPage() {
             const bedrijf = f.shift?.horeca?.horecaProfile?.companyName || ''
             const isKok = !!user && (f.shift?.chosenKokId === user.id || user.role === 'ADMIN')
             return (
-              <div key={f.id} style={{ background: '#fff', border: '1px solid #eceee3', borderRadius: 18, padding: '20px 22px', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
+              <div key={f.id} style={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 18, padding: '20px 22px', display: 'flex', alignItems: 'center', gap: 16, flexWrap: 'wrap' }}>
                 <span style={{ width: 44, height: 44, borderRadius: 13, background: '#eef2e6', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', fontWeight: 800, color: '#4c5e42', fontSize: 15, flexShrink: 0 }}>
                   F
                 </span>
                 <div style={{ flex: 1, minWidth: 200 }}>
                   <div style={{ fontWeight: 800, fontSize: 15, letterSpacing: -0.2 }}>{nummer}</div>
-                  <div style={{ color: '#6b7268', fontSize: 13, marginTop: 3 }}>
+                  <div style={{ color: 'hsl(var(--muted-foreground))', fontSize: 13, marginTop: 3 }}>
                     {f.shift?.title}{bedrijf ? ` · ${bedrijf}` : ''}
                   </div>
-                  <div style={{ color: '#9aa39b', fontSize: 12.5, marginTop: 2 }}>
+                  <div style={{ color: 'hsl(var(--muted-foreground))', fontSize: 12.5, marginTop: 2 }}>
                     {t.shift_on} {f.shift?.date ? datumNL(f.shift.date, lang) : '-'}
                   </div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontWeight: 800, fontSize: 17, letterSpacing: -0.3 }}>{eur(f.amountInclVat)}</div>
-                  <div style={{ color: '#9aa39b', fontSize: 12 }}>{t.kok_part}: {eur(f.kokPayout)}</div>
+                  <div style={{ color: 'hsl(var(--muted-foreground))', fontSize: 12 }}>{t.kok_part}: {eur(f.kokPayout)}</div>
                   <div style={{ marginTop: 6 }}>{badge(f.status)}</div>
                 </div>
                 {f.status === 'PAID' && (
@@ -166,7 +168,7 @@ export default function FacturenPage() {
                         href={`/api/invoices/${f.id}/commissie`}
                         target="_blank"
                         rel="noopener noreferrer"
-                        style={{ background: '#fff', color: '#46553c', border: '1.5px solid #cfd8c0', padding: '10px 20px', borderRadius: 999, fontWeight: 700, fontSize: 13.5, textDecoration: 'none' }}
+                        style={{ background: 'hsl(var(--card))', color: '#46553c', border: '1.5px solid #cfd8c0', padding: '10px 20px', borderRadius: 999, fontWeight: 700, fontSize: 13.5, textDecoration: 'none' }}
                       >
                         {t.commissie}
                       </a>

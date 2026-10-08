@@ -1,23 +1,25 @@
 'use client'
 
 import { useT, LangToggle } from '@/lib/i18n'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const FONT = '"Sora","Inter","Helvetica Neue",Arial,sans-serif'
 
 const h2: React.CSSProperties = { fontSize: 'clamp(22px, 3vw, 30px)', fontWeight: 800, letterSpacing: -0.8, margin: '46px 0 14px' }
-const p: React.CSSProperties = { color: '#4a5044', fontSize: 16, lineHeight: 1.75, margin: '0 0 14px' }
+const p: React.CSSProperties = { color: 'hsl(var(--muted-foreground))', fontSize: 16, lineHeight: 1.75, margin: '0 0 14px' }
 
 export default function OverOnsPage() {
   const { t } = useT()
 
   return (
-    <main style={{ fontFamily: FONT, background: '#f6f7f2', color: '#23281f', minHeight: '100vh' }}>
-      <nav style={{ background: '#fff', borderBottom: '1px solid #e8ebe0', padding: '14px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-        <a href="/" style={{ fontWeight: 800, fontSize: 20, color: '#23281f', textDecoration: 'none', letterSpacing: -0.5 }}>
+    <main style={{ fontFamily: FONT, background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', minHeight: '100vh' }}>
+      <nav className="cs-nav" style={{ background: '#fff', borderBottom: '1px solid #e8ebe0', padding: '14px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <a href="/" style={{ fontWeight: 800, fontSize: 20, color: 'hsl(var(--foreground))', textDecoration: 'none', letterSpacing: -0.5 }}>
           Chef<span style={{ color: '#5f7052' }}>Shift</span>
         </a>
         <span style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <LangToggle />
+          <ThemeToggle />
           <a href="/register" style={{ background: 'linear-gradient(135deg,#647a55,#46553c)', color: '#fff', padding: '10px 22px', borderRadius: 999, fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
             {t('nav_register')}
           </a>
@@ -29,7 +31,7 @@ export default function OverOnsPage() {
         <h1 style={{ fontSize: 'clamp(34px, 5vw, 52px)', fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.08, margin: '14px 0 18px' }}>
           {t('over_title')}
         </h1>
-        <p style={{ ...p, fontSize: 18, color: '#6b7268' }}>{t('over_intro')}</p>
+        <p style={{ ...p, fontSize: 18, color: 'hsl(var(--muted-foreground))' }}>{t('over_intro')}</p>
 
         <h2 style={h2}>{t('over_why_h')}</h2>
         <p style={p}>{t('over_why_p1')}</p>

@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useT, LangToggle, Key } from '@/lib/i18n'
+import ThemeToggle from '@/components/ThemeToggle'
 import ShiftCard, { ShiftData } from '@/components/ShiftCard'
 import AnimStyles from '@/components/AnimStyles'
 import { IcoTile } from '@/components/Icons'
@@ -92,6 +93,7 @@ export default function ShiftsPage() {
         </a>
         <div style={{ display: 'flex', gap: 18, alignItems: 'center', flexWrap: 'wrap' }}>
           <LangToggle />
+          <ThemeToggle />
           {(() => {
             const label = t('back_dashboard')
             const espace = label.indexOf(' ')

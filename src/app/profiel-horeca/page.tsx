@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useT, LangToggle } from '@/lib/i18n'
+import ThemeToggle from '@/components/ThemeToggle'
 import AnimStyles from '@/components/AnimStyles'
 import { Ico, IcoStar } from '@/components/Icons'
 
@@ -120,6 +121,7 @@ export default function ProfielHorecaPage() {
         </a>
         <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
           <LangToggle />
+          <ThemeToggle />
           <a href="/dashboard" className="cs-nav-link" style={{ color: '#5f7052', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
             {t('back_dashboard')}
           </a>

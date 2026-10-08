@@ -4,7 +4,8 @@ import { useEffect, useState } from 'react'
 
 // Bouton de bascule clair / sombre.
 // Le thème est appliqué très tôt par le script anti-flash du layout (data-theme sur <html>).
-export default function ThemeToggle() {
+// `clair` : icône blanche, pour les barres de navigation posées sur le hero sombre.
+export default function ThemeToggle({ clair }: { clair?: boolean }) {
   const [dark, setDark] = useState(false)
   const [monte, setMonte] = useState(false)
 
@@ -40,7 +41,7 @@ export default function ThemeToggle() {
         display: 'inline-flex',
         alignItems: 'center',
         justifyContent: 'center',
-        color: 'hsl(var(--foreground))',
+        color: clair ? '#fff' : 'hsl(var(--foreground))',
         opacity: monte ? 1 : 0,
         transition: 'opacity .2s ease, color .2s ease',
       }}

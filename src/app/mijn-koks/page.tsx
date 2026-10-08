@@ -71,8 +71,8 @@ export default function MijnKoksPage() {
       {koks === null ? (
         <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: 14 }}>…</p>
       ) : koks.length === 0 ? (
-        <div style={{ background: '#f6f7f2', border: '1px solid #eceee3', borderRadius: 16, padding: '26px 24px' }}>
-          <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.7, color: '#6b7268', fontWeight: 600 }}>
+        <div style={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 16, padding: '26px 24px' }}>
+          <p style={{ margin: 0, fontSize: 14.5, lineHeight: 1.7, color: 'hsl(var(--muted-foreground))', fontWeight: 600 }}>
             {t('mk_leeg')}
           </p>
         </div>
@@ -94,7 +94,7 @@ export default function MijnKoksPage() {
                 className="cs-card"
                 style={{
                   display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap',
-                  background: '#fff', border: '1px solid #eceee3', borderRadius: 16,
+                  background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 16,
                   padding: '18px 20px', boxShadow: '0 3px 12px rgba(46,52,43,0.05)',
                 }}
               >
@@ -128,7 +128,7 @@ export default function MijnKoksPage() {
                   style={{
                     background: 'none', border: '1.5px solid #dfe4d4', borderRadius: 10,
                     padding: '9px 16px', fontWeight: 700, fontSize: 13, fontFamily: FONT,
-                    color: '#6b7268', cursor: bezig === k.id ? 'wait' : 'pointer',
+                    color: 'hsl(var(--muted-foreground))', cursor: bezig === k.id ? 'wait' : 'pointer',
                     opacity: bezig === k.id ? 0.6 : 1,
                   }}
                 >

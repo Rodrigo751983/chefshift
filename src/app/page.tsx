@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react'
 import { useT, LangToggle } from '@/lib/i18n'
+import ThemeToggle from '@/components/ThemeToggle'
 import AnimStyles from '@/components/AnimStyles'
 import { Ico, IcoTile, IcoStar } from '@/components/Icons'
 
@@ -181,15 +182,15 @@ export default function HomePage() {
     { q: t('faq5_q'), a: t('faq5_a') },
   ]
 
-  const navTekstKleur = scrolde ? '#3c4436' : 'rgba(255,255,255,0.92)'
+  const navTekstKleur = scrolde ? 'hsl(var(--foreground))' : 'rgba(255,255,255,0.92)'
 
   const kopStijl: React.CSSProperties = { textAlign: 'center', maxWidth: 680, margin: '0 auto 58px' }
   const overStijl: React.CSSProperties = { color: '#5f7052', fontWeight: 800, fontSize: 12.5, letterSpacing: 2.5, textTransform: 'uppercase' }
   const h2Stijl: React.CSSProperties = { fontSize: 'clamp(30px, 4vw, 46px)', fontWeight: 800, letterSpacing: -1.4, margin: '12px 0 14px' }
-  const subStijl: React.CSSProperties = { color: '#6b7268', fontSize: 16.5, lineHeight: 1.6 }
+  const subStijl: React.CSSProperties = { color: 'hsl(var(--muted-foreground))', fontSize: 16.5, lineHeight: 1.6 }
 
   return (
-    <main style={{ fontFamily: FONT, background: '#f6f7f2', color: '#23281f', minHeight: '100vh' }}>
+    <main style={{ fontFamily: FONT, background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', minHeight: '100vh' }}>
       <AnimStyles />
       <script type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(JSON_LD) }} />
 
@@ -201,11 +202,11 @@ export default function HomePage() {
         padding: '13px 26px', borderRadius: 999,
         background: scrolde ? 'rgba(255,255,255,0.92)' : 'rgba(255,255,255,0.13)',
         backdropFilter: 'blur(16px)',
-        border: scrolde ? '1px solid #eceee3' : '1px solid rgba(255,255,255,0.28)',
+        border: scrolde ? '1px solid hsl(var(--border))' : '1px solid rgba(255,255,255,0.28)',
         boxShadow: scrolde ? '0 10px 30px rgba(46,52,43,.14)' : '0 8px 30px rgba(20,26,17,.18)',
         transition: 'background .3s ease, border-color .3s ease, box-shadow .3s ease',
       }}>
-        <a href="/" style={{ fontWeight: 800, fontSize: 20, color: scrolde ? '#23281f' : '#fff', textDecoration: 'none', letterSpacing: -0.5, transition: 'color .3s ease' }}>
+        <a href="/" style={{ fontWeight: 800, fontSize: 20, color: scrolde ? 'hsl(var(--foreground))' : '#fff', textDecoration: 'none', letterSpacing: -0.5, transition: 'color .3s ease' }}>
           Chef<span style={{ color: scrolde ? '#5f7052' : '#cfdcba' }}>Shift</span>
         </a>
         <div style={{ display: 'flex', gap: 22, alignItems: 'center' }}>
@@ -216,6 +217,7 @@ export default function HomePage() {
             {t('nav_faq')}
           </a>
           <LangToggle clair={!scrolde} />
+          <ThemeToggle clair={!scrolde} />
           {charge && user ? (
             <>
               <span className="cs-hide-mob" style={{ color: navTekstKleur, fontSize: 13.5, fontWeight: 600 }}>
@@ -250,13 +252,13 @@ export default function HomePage() {
 
         {/* Cartes flottantes : note, vérification, disponibilité */}
         <ZweefKaart stijl={{ top: '38%', right: '16%' }}>
-          <span style={{ width: 36, height: 36, borderRadius: 11, background: '#eef2e6', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ width: 36, height: 36, borderRadius: 11, background: 'hsl(var(--accent))', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
             <Ico n="shield" s={17} c="#4c5e42" />
           </span>
           <div style={{ fontWeight: 700, fontSize: 13.5, letterSpacing: -0.2 }}>{t('fc_verified')}</div>
         </ZweefKaart>
         <ZweefKaart stijl={{ top: '53%', right: '5%' }}>
-          <span style={{ width: 36, height: 36, borderRadius: 11, background: '#eef2e6', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
+          <span style={{ width: 36, height: 36, borderRadius: 11, background: 'hsl(var(--accent))', display: 'inline-flex', alignItems: 'center', justifyContent: 'center' }}>
             <Ico n="cal" s={17} c="#4c5e42" />
           </span>
           <div style={{ fontWeight: 700, fontSize: 13.5, letterSpacing: -0.2 }}>{t('fc_today')}</div>
@@ -295,11 +297,11 @@ export default function HomePage() {
       </header>
 
       {/* ===== Bandeau de confiance : segments desservis ===== */}
-      <section aria-label={t('trust_over')} style={{ padding: '34px 24px', borderBottom: '1px solid #eceee3', background: '#fff' }}>
+      <section aria-label={t('trust_over')} style={{ padding: '34px 24px', borderBottom: '1px solid hsl(var(--border))', background: 'hsl(var(--card))' }}>
         <div style={{ maxWidth: 1200, margin: '0 auto', display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 18, flexWrap: 'wrap' }}>
-          <span style={{ color: '#9aa39b', fontSize: 12.5, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' }}>{t('trust_over')}</span>
+          <span style={{ color: 'hsl(var(--muted-foreground))', fontSize: 12.5, fontWeight: 700, letterSpacing: 2, textTransform: 'uppercase' }}>{t('trust_over')}</span>
           {[t('trust_1'), t('trust_2'), t('trust_3'), t('trust_4'), t('trust_5')].map((s) => (
-            <span key={s} style={{ color: '#4c5e42', fontWeight: 800, fontSize: 15, letterSpacing: -0.2, padding: '8px 18px', background: '#f6f7f2', borderRadius: 999, border: '1px solid #eceee3' }}>
+            <span key={s} style={{ color: '#4c5e42', fontWeight: 800, fontSize: 15, letterSpacing: -0.2, padding: '8px 18px', background: 'hsl(var(--secondary))', borderRadius: 999, border: '1px solid hsl(var(--border))' }}>
               {s}
             </span>
           ))}
@@ -332,7 +334,7 @@ export default function HomePage() {
               ],
             },
           ].map((groep) => (
-            <div key={groep.label} className="cs-card" style={{ background: '#fff', borderRadius: 22, border: '1px solid #eceee3', padding: '38px 32px', boxShadow: '0 3px 12px rgba(46,52,43,0.05)' }}>
+            <div key={groep.label} className="cs-card" style={{ background: 'hsl(var(--card))', borderRadius: 22, border: '1px solid hsl(var(--border))', padding: '38px 32px', boxShadow: '0 3px 12px rgba(46,52,43,0.05)' }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 12, marginBottom: 28 }}>
                 <IcoTile n={groep.icon} s={20} />
                 <h3 style={{ fontSize: 19, fontWeight: 800, letterSpacing: -0.4 }}>{groep.label}</h3>
@@ -342,7 +344,7 @@ export default function HomePage() {
                   <div key={e.t} style={{ display: 'flex', gap: 15, position: 'relative' }}>
                     {/* Timeline verticale */}
                     {i < groep.stappen.length - 1 && (
-                      <span aria-hidden="true" style={{ position: 'absolute', left: 19, top: 44, bottom: -18, width: 2, background: '#e6ebd9' }} />
+                      <span aria-hidden="true" style={{ position: 'absolute', left: 19, top: 44, bottom: -18, width: 2, background: 'hsl(var(--border))' }} />
                     )}
                     <span style={{
                       width: 40, height: 40, flexShrink: 0, borderRadius: 13,
@@ -354,7 +356,7 @@ export default function HomePage() {
                     </span>
                     <div>
                       <div style={{ fontWeight: 800, fontSize: 15.5, letterSpacing: -0.2, marginBottom: 4 }}>{e.t}</div>
-                      <p style={{ color: '#6b7268', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{e.d}</p>
+                      <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: 14, lineHeight: 1.6, margin: 0 }}>{e.d}</p>
                     </div>
                   </div>
                 ))}
@@ -380,10 +382,10 @@ export default function HomePage() {
             { icon: 'bell', t: t('feat6_t'), d: t('feat6_d') },
             { icon: 'flame', t: t('feat9_t'), d: t('feat9_d') },
           ].map((c) => (
-            <div key={c.t} className="cs-card" style={{ background: '#fff', borderRadius: 20, border: '1px solid #eceee3', boxShadow: '0 3px 12px rgba(46,52,43,0.05)', padding: '32px 28px' }}>
+            <div key={c.t} className="cs-card" style={{ background: 'hsl(var(--card))', borderRadius: 20, border: '1px solid hsl(var(--border))', boxShadow: '0 3px 12px rgba(46,52,43,0.05)', padding: '32px 28px' }}>
               <div style={{ marginBottom: 18 }}><IcoTile n={c.icon} s={21} /></div>
               <h3 style={{ fontSize: 18.5, fontWeight: 800, marginBottom: 9, letterSpacing: -0.3 }}>{c.t}</h3>
-              <p style={{ color: '#6b7268', fontSize: 14.5, lineHeight: 1.6 }}>{c.d}</p>
+              <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: 14.5, lineHeight: 1.6 }}>{c.d}</p>
             </div>
           ))}
         </div>
@@ -396,12 +398,12 @@ export default function HomePage() {
           <h2 style={h2Stijl}>{t('cmp_title')}</h2>
           <p style={subStijl}>{t('cmp_sub')}</p>
         </div>
-        <div className="cs-card" style={{ background: '#fff', borderRadius: 22, border: '1px solid #eceee3', boxShadow: '0 3px 12px rgba(46,52,43,0.05)', overflow: 'hidden' }}>
+        <div className="cs-card" style={{ background: 'hsl(var(--card))', borderRadius: 22, border: '1px solid hsl(var(--border))', boxShadow: '0 3px 12px rgba(46,52,43,0.05)', overflow: 'hidden' }}>
           {/* En-tête */}
-          <div className="cs-cmp-head" style={{ background: '#f6f7f2', borderBottom: '1px solid #eceee3' }}>
+          <div className="cs-cmp-head" style={{ background: 'hsl(var(--secondary))', borderBottom: '1px solid hsl(var(--border))' }}>
             <div style={{ padding: '18px 22px' }} />
-            <div style={{ padding: '18px 22px', color: '#9aa39b', fontWeight: 700, fontSize: 13.5 }}>{t('cmp_col_a')}</div>
-            <div style={{ padding: '18px 22px', fontWeight: 800, fontSize: 14.5, color: '#46553c', background: '#eef2e6' }}>
+            <div style={{ padding: '18px 22px', color: 'hsl(var(--muted-foreground))', fontWeight: 700, fontSize: 13.5 }}>{t('cmp_col_a')}</div>
+            <div style={{ padding: '18px 22px', fontWeight: 800, fontSize: 14.5, color: '#46553c', background: 'hsl(var(--accent))' }}>
               ChefShift
             </div>
           </div>
@@ -413,12 +415,12 @@ export default function HomePage() {
             { l: t('cmp_l5'), a: t('cmp_r5_a'), b: t('cmp_r5_b') },
             { l: t('cmp_l6'), a: t('cmp_r6_a'), b: t('cmp_r6_b') },
           ].map((r, i, arr) => (
-            <div key={r.l} className="cs-cmp-row" style={{ borderBottom: i < arr.length - 1 ? '1px solid #f0f2ea' : 'none' }}>
-              <div className="cs-cmp-label" style={{ padding: '17px 22px', fontWeight: 700, fontSize: 14, color: '#3c4436' }}>{r.l}</div>
-              <div className="cs-cmp-cel" data-kolom={t('cmp_col_a')} style={{ padding: '17px 22px', color: '#9aa39b', fontSize: 13.5, lineHeight: 1.55, display: 'flex', gap: 9 }}>
+            <div key={r.l} className="cs-cmp-row" style={{ borderBottom: i < arr.length - 1 ? '1px solid hsl(var(--border))' : 'none' }}>
+              <div className="cs-cmp-label" style={{ padding: '17px 22px', fontWeight: 700, fontSize: 14, color: 'hsl(var(--foreground))' }}>{r.l}</div>
+              <div className="cs-cmp-cel" data-kolom={t('cmp_col_a')} style={{ padding: '17px 22px', color: 'hsl(var(--muted-foreground))', fontSize: 13.5, lineHeight: 1.55, display: 'flex', gap: 9 }}>
                 <span aria-hidden="true" style={{ flexShrink: 0, marginTop: 1 }}>✕</span>{r.a}
               </div>
-              <div className="cs-cmp-cel cs-cmp-cel-cs" data-kolom="ChefShift" style={{ padding: '17px 22px', color: '#3c4436', fontSize: 13.5, fontWeight: 600, lineHeight: 1.55, background: '#f4f7ee', display: 'flex', gap: 9 }}>
+              <div className="cs-cmp-cel cs-cmp-cel-cs" data-kolom="ChefShift" style={{ padding: '17px 22px', color: 'hsl(var(--foreground))', fontSize: 13.5, fontWeight: 600, lineHeight: 1.55, background: 'hsl(var(--accent))', display: 'flex', gap: 9 }}>
                 <span style={{ flexShrink: 0, marginTop: 1 }}><Ico n="check" s={14} c="#4c5e42" /></span>{r.b}
               </div>
             </div>
@@ -429,7 +431,7 @@ export default function HomePage() {
       {/* ===== Voor horeca : photo + arguments restaurants ===== */}
       <section id="horeca" className="cs-sec2" style={{ padding: '0 24px 96px', maxWidth: 1200, margin: '0 auto', scrollMarginTop: 90 }}>
         <div className="cs-card" style={{
-          background: '#fff', borderRadius: 24, border: '1px solid #eceee3',
+          background: 'hsl(var(--card))', borderRadius: 24, border: '1px solid hsl(var(--border))',
           boxShadow: '0 3px 12px rgba(46,52,43,0.05)', overflow: 'hidden',
           display: 'grid', gridTemplateColumns: 'repeat(auto-fit, minmax(320px, 1fr))',
         }}>
@@ -442,11 +444,11 @@ export default function HomePage() {
           <div style={{ padding: '46px 42px', display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <span style={overStijl}>{t('hor_over')}</span>
             <h2 style={{ fontSize: 'clamp(26px, 3.5vw, 38px)', fontWeight: 800, letterSpacing: -1.1, margin: '12px 0 12px' }}>{t('hor_title')}</h2>
-            <p style={{ color: '#6b7268', fontSize: 15.5, lineHeight: 1.65, marginBottom: 24 }}>{t('hor_sub')}</p>
+            <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: 15.5, lineHeight: 1.65, marginBottom: 24 }}>{t('hor_sub')}</p>
             <div style={{ display: 'grid', gap: 13, marginBottom: 30 }}>
               {[t('hor_p1'), t('hor_p2'), t('hor_p3'), t('hor_p4')].map((p) => (
-                <div key={p} style={{ display: 'flex', alignItems: 'center', gap: 11, fontSize: 14.5, fontWeight: 600, color: '#3c4436' }}>
-                  <span style={{ width: 27, height: 27, borderRadius: 9, background: '#eef2e6', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                <div key={p} style={{ display: 'flex', alignItems: 'center', gap: 11, fontSize: 14.5, fontWeight: 600, color: 'hsl(var(--foreground))' }}>
+                  <span style={{ width: 27, height: 27, borderRadius: 9, background: 'hsl(var(--accent))', display: 'inline-flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Ico n="check" s={14} c="#4c5e42" />
                   </span>
                   {p}
@@ -477,10 +479,10 @@ export default function HomePage() {
             { n: '02', t: t('start2_t'), d: t('start2_d') },
             { n: '03', t: t('start3_t'), d: t('start3_d') },
           ].map((c) => (
-            <div key={c.n} className="cs-card" style={{ background: '#fff', borderRadius: 20, border: '1px solid #eceee3', boxShadow: '0 3px 12px rgba(46,52,43,0.05)', padding: '30px 28px' }}>
-              <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: 2, color: '#9aa39b' }}>{c.n}</div>
+            <div key={c.n} className="cs-card" style={{ background: 'hsl(var(--card))', borderRadius: 20, border: '1px solid hsl(var(--border))', boxShadow: '0 3px 12px rgba(46,52,43,0.05)', padding: '30px 28px' }}>
+              <div style={{ fontSize: 13, fontWeight: 800, letterSpacing: 2, color: 'hsl(var(--muted-foreground))' }}>{c.n}</div>
               <div style={{ fontWeight: 800, fontSize: 17, letterSpacing: -0.3, margin: '10px 0 8px' }}>{c.t}</div>
-              <p style={{ color: '#6b7268', fontSize: 14.5, lineHeight: 1.7, margin: 0 }}>{c.d}</p>
+              <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: 14.5, lineHeight: 1.7, margin: 0 }}>{c.d}</p>
             </div>
           ))}
         </div>
@@ -496,7 +498,7 @@ export default function HomePage() {
           {faqItems.map((f, i) => {
             const open = faqOpen === i
             return (
-              <div key={f.q} className="cs-card" style={{ background: '#fff', borderRadius: 18, border: '1px solid #eceee3', boxShadow: '0 3px 12px rgba(46,52,43,0.05)', overflow: 'hidden' }}>
+              <div key={f.q} className="cs-card" style={{ background: 'hsl(var(--card))', borderRadius: 18, border: '1px solid hsl(var(--border))', boxShadow: '0 3px 12px rgba(46,52,43,0.05)', overflow: 'hidden' }}>
                 <button
                   type="button"
                   onClick={() => setFaqOpen(open ? null : i)}
@@ -505,7 +507,7 @@ export default function HomePage() {
                   style={{
                     width: '100%', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 16,
                     padding: '22px 26px', background: 'none', border: 'none', cursor: 'pointer',
-                    fontFamily: 'inherit', fontSize: 16, fontWeight: 800, letterSpacing: -0.3, color: '#23281f', textAlign: 'left',
+                    fontFamily: 'inherit', fontSize: 16, fontWeight: 800, letterSpacing: -0.3, color: 'hsl(var(--foreground))', textAlign: 'left',
                   }}
                 >
                   {f.q}
@@ -523,7 +525,7 @@ export default function HomePage() {
                   role="region"
                   style={{ maxHeight: open ? 300 : 0, overflow: 'hidden', transition: 'max-height .35s ease' }}
                 >
-                  <p style={{ padding: '0 26px 24px', margin: 0, color: '#6b7268', fontSize: 14.5, lineHeight: 1.7 }}>{f.a}</p>
+                  <p style={{ padding: '0 26px 24px', margin: 0, color: 'hsl(var(--muted-foreground))', fontSize: 14.5, lineHeight: 1.7 }}>{f.a}</p>
                 </div>
               </div>
             )
@@ -535,7 +537,7 @@ export default function HomePage() {
       <section className="cs-sec2" style={{ padding: '0 24px 96px', maxWidth: 1200, margin: '0 auto' }}>
         <div className="cs-card" style={{
           position: 'relative', borderRadius: 28, overflow: 'hidden', padding: '84px 40px', textAlign: 'center', color: '#fff',
-          border: '1px solid #eceee3', background: 'linear-gradient(135deg, #242c1f 0%, #38452c 55%, #55684a 100%)',
+          border: '1px solid hsl(var(--border))', background: 'linear-gradient(135deg, #242c1f 0%, #38452c 55%, #55684a 100%)',
         }}>
           <PhotoFond />
           <div aria-hidden="true" style={{ position: 'absolute', inset: 0, background: 'linear-gradient(135deg, rgba(36,44,31,0.80), rgba(70,85,60,0.70))' }} />
@@ -564,10 +566,10 @@ export default function HomePage() {
 
       {/* ===== Contact ===== */}
       <section className="cs-sec2" style={{ padding: '0 24px 96px', maxWidth: 1200, margin: '0 auto' }}>
-        <div className="cs-card" style={{ background: '#fff', borderRadius: 20, border: '1px solid #eceee3', boxShadow: '0 3px 12px rgba(46,52,43,0.05)', padding: '44px 32px', textAlign: 'center' }}>
+        <div className="cs-card" style={{ background: 'hsl(var(--card))', borderRadius: 20, border: '1px solid hsl(var(--border))', boxShadow: '0 3px 12px rgba(46,52,43,0.05)', padding: '44px 32px', textAlign: 'center' }}>
           <div style={{ display: 'flex', justifyContent: 'center', marginBottom: 16 }}><IcoTile n="msg" s={22} taille={56} /></div>
           <h2 style={{ fontSize: 'clamp(22px, 3vw, 30px)', fontWeight: 800, letterSpacing: -0.8, marginBottom: 10 }}>{t('contact_title')}</h2>
-          <p style={{ color: '#6b7268', fontSize: 15, marginBottom: 24 }}>{t('contact_sub')}</p>
+          <p style={{ color: 'hsl(var(--muted-foreground))', fontSize: 15, marginBottom: 24 }}>{t('contact_sub')}</p>
           <a href={`mailto:${CONTACT_EMAIL}`} className="cs-btn" style={{
             display: 'inline-flex', alignItems: 'center', gap: 8,
             background: 'linear-gradient(135deg,#647a55,#46553c)', color: '#fff',

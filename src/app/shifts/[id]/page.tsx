@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { useT, LangToggle, afficherPoste, afficherSpecialite } from '@/lib/i18n'
+import ThemeToggle from '@/components/ThemeToggle'
 import AnimStyles from '@/components/AnimStyles'
 import { Ico, IcoStar } from '@/components/Icons'
 import { shiftWhatsAppTekst, whatsappDeelUrl } from '@/lib/whatsapp'
@@ -535,6 +536,7 @@ export default function ShiftDetailPage({ params }: { params: { id: string } }) 
         </a>
         <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
           <LangToggle />
+          <ThemeToggle />
           <a href="/shifts" style={{ color: '#5f7052', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
             {t('back_shifts')}
           </a>

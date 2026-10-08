@@ -3,6 +3,7 @@
 import { signIn } from 'next-auth/react'
 import { useState } from 'react'
 import { useT, LangToggle } from '@/lib/i18n'
+import ThemeToggle from '@/components/ThemeToggle'
 import AnimStyles from '@/components/AnimStyles'
 
 const FONT = '"Sora","Inter","Helvetica Neue",Arial,sans-serif'
@@ -38,6 +39,7 @@ export default function LoginPage() {
         </a>
         <div style={{ display: 'flex', gap: 18, alignItems: 'center' }}>
           <LangToggle />
+          <ThemeToggle />
           <a href="/register" style={{ color: '#5f7052', fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
             {t('login_noaccount')}
           </a>

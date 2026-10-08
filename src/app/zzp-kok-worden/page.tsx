@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import { LangToggle } from '@/lib/i18n'
+import ThemeToggle from '@/components/ThemeToggle'
 
 const FONT = '"Sora","Inter","Helvetica Neue",Arial,sans-serif'
 
@@ -97,20 +98,21 @@ const C = {
 } as const
 
 const h2s: React.CSSProperties = { fontSize: 'clamp(22px, 3vw, 30px)', fontWeight: 800, letterSpacing: -0.8, margin: '46px 0 14px' }
-const ps: React.CSSProperties = { color: '#4a5044', fontSize: 16, lineHeight: 1.75, margin: '0 0 14px' }
+const ps: React.CSSProperties = { color: 'hsl(var(--muted-foreground))', fontSize: 16, lineHeight: 1.75, margin: '0 0 14px' }
 
 export default function ZzpKokWordenPage() {
   const lang = useLang()
   const c = C[lang]
 
   return (
-    <main style={{ fontFamily: FONT, background: '#f6f7f2', color: '#23281f', minHeight: '100vh' }}>
-      <nav style={{ background: '#fff', borderBottom: '1px solid #e8ebe0', padding: '14px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
-        <a href="/" style={{ fontWeight: 800, fontSize: 20, color: '#23281f', textDecoration: 'none', letterSpacing: -0.5 }}>
+    <main style={{ fontFamily: FONT, background: 'hsl(var(--background))', color: 'hsl(var(--foreground))', minHeight: '100vh' }}>
+      <nav className="cs-nav" style={{ background: '#fff', borderBottom: '1px solid #e8ebe0', padding: '14px 28px', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: 12 }}>
+        <a href="/" style={{ fontWeight: 800, fontSize: 20, color: 'hsl(var(--foreground))', textDecoration: 'none', letterSpacing: -0.5 }}>
           Chef<span style={{ color: '#5f7052' }}>Shift</span>
         </a>
         <span style={{ display: 'flex', alignItems: 'center', gap: 14 }}>
           <LangToggle />
+          <ThemeToggle />
           <a href="/register" style={{ background: 'linear-gradient(135deg,#647a55,#46553c)', color: '#fff', padding: '10px 22px', borderRadius: 999, fontWeight: 700, fontSize: 14, textDecoration: 'none' }}>
             {c.signup}
           </a>
@@ -122,13 +124,13 @@ export default function ZzpKokWordenPage() {
         <h1 style={{ fontSize: 'clamp(34px, 5vw, 52px)', fontWeight: 800, letterSpacing: -1.5, lineHeight: 1.08, margin: '14px 0 18px' }}>
           {c.h1}
         </h1>
-        <p style={{ ...ps, fontSize: 18, color: '#6b7268' }}>{c.intro}</p>
+        <p style={{ ...ps, fontSize: 18, color: 'hsl(var(--muted-foreground))' }}>{c.intro}</p>
 
         <h2 style={h2s}>{c.s1h}</h2>
         <p style={ps}>{c.s1p}</p>
         <ul style={{ paddingLeft: 22, margin: '0 0 14px', display: 'grid', gap: 8 }}>
           {c.s1l.map((z) => (
-            <li key={z} style={{ color: '#4a5044', fontSize: 16, lineHeight: 1.75 }}>
+            <li key={z} style={{ color: 'hsl(var(--muted-foreground))', fontSize: 16, lineHeight: 1.75 }}>
               {z}
             </li>
           ))}
@@ -148,7 +150,7 @@ export default function ZzpKokWordenPage() {
         <h2 style={h2s}>{c.faq_h}</h2>
         <div style={{ display: 'grid', gap: 12, marginTop: 18 }}>
           {c.faq.map(([v, a]) => (
-            <details key={v} style={{ background: '#fff', border: '1px solid #eceee3', borderRadius: 14, padding: '18px 20px' }}>
+            <details key={v} style={{ background: 'hsl(var(--card))', border: '1px solid hsl(var(--border))', borderRadius: 14, padding: '18px 20px' }}>
               <summary style={{ fontWeight: 700, fontSize: 15.5, cursor: 'pointer' }}>{v}</summary>
               <p style={{ ...ps, marginTop: 10, marginBottom: 0 }}>{a}</p>
             </details>
@@ -170,7 +172,7 @@ export default function ZzpKokWordenPage() {
           </div>
         </div>
 
-        <p style={{ ...ps, marginTop: 36, fontSize: 14, color: '#9aa39b' }}>
+        <p style={{ ...ps, marginTop: 36, fontSize: 14, color: 'hsl(var(--muted-foreground))' }}>
           {c.outro}{' '}
           <a href="/kok-inhuren" style={{ color: '#5f7052', fontWeight: 700 }}>{c.outro_link}</a>.
         </p>
