@@ -120,7 +120,8 @@ export default function DashboardPage() {
         { c: `€${Math.round(stats?.totalGagne ?? 0)}`, l: t('stat_earn_total'), icone: 'bank', lien: '' },
       ]
     : [
-        { c: String(shifts.length), l: t('stat_hor_1'), icone: 'brief', lien: '/shifts' },
+        // Shifts actifs : les expirés (EXPIRED virtuel, sans chef, date passée) ne comptent plus
+        { c: String(shifts.filter((s) => s.status !== 'EXPIRED').length), l: t('stat_hor_1'), icone: 'brief', lien: '/shifts' },
         { c: String(aBetalen.length), l: t('stat_te_betalen'), icone: 'card', lien: '/shifts?passe=1&filtre=te_betalen' },
         { c: `€${Math.round(depenseMois)}`, l: t('stat_spend_month'), icone: 'cal', lien: '' },
         { c: `€${Math.round(stats?.totalDepense ?? 0)}`, l: t('stat_spend_total'), icone: 'bank', lien: '' },

@@ -27,6 +27,15 @@ async function avecEind<T extends { id: string }>(shifts: T[]) {
   })
 }
 
+// Statut virtuel : un shift OPEN, date passée, sans chef choisi = EXPIRED.
+// Rien n'est écrit en base : si l'horeca prolonge la date, il redevient OPEN.
+function marqueVerlopen<T extends { status: string; date: Date | string; chosenKokId?: string | null }>(shifts: T[]): T[] {
+  const aujourdhui = new Date(new Date().toDateString())
+  return shifts.map((s) =>
+    s.status === 'OPEN' && !s.chosenKokId && new Date(s.date) < aujourdhui ? { ...s, status: 'EXPIRED' } : s
+  )
+}
+
 export async function GET(req: NextRequest) {
   try {
     const session = await getServerSession(authOptions)
@@ -46,7 +55,7 @@ export async function GET(req: NextRequest) {
         include: INCLUSIONS,
         orderBy: [{ date: 'desc' }],
       })
-      return NextResponse.json({ shifts: await avecEind(shifts) })
+      return NextResponse.json({ shifts: await avecEind(marqueVerlopen(shifts)) })
     }
 
     // Vues dédiées du chef : ses shifts à venir, ses candidatures, ses shifts acceptés
@@ -61,7 +70,7 @@ export async function GET(req: NextRequest) {
           include: INCLUSIONS,
           orderBy: [{ date: vue === 'avenir' ? 'asc' : 'desc' }],
         })
-        return NextResponse.json({ shifts: await avecEind(shifts) })
+        return NextResponse.json({ shifts: await avecEind(marqueVerlopen(shifts)) })
       }
       if (vue === 'candidatures') {
         where.applications = { some: { kokId: session.user.id } }
@@ -71,7 +80,7 @@ export async function GET(req: NextRequest) {
           include: INCLUSIONS,
           orderBy: [{ date: 'asc' }],
         })
-        return NextResponse.json({ shifts: await avecEind(shifts) })
+        return NextResponse.json({ shifts: await avecEind(marqueVerlopen(shifts)) })
       }
     }
 
@@ -87,7 +96,7 @@ export async function GET(req: NextRequest) {
           include: INCLUSIONS,
           orderBy: [{ date: 'desc' }],
         })
-        return NextResponse.json({ shifts: await avecEind(shifts) })
+        return NextResponse.json({ shifts: await avecEind(marqueVerlopen(shifts)) })
       }
     }
 
@@ -105,7 +114,7 @@ export async function GET(req: NextRequest) {
       orderBy: [{ isUrgent: 'desc' }, { createdAt: 'desc' }],
     })
 
-    return NextResponse.json({ shifts: await avecEind(shifts) })
+    return NextResponse.json({ shifts: await avecEind(marqueVerlopen(shifts)) })
   } catch (error) {
     return NextResponse.json({ error: 'Internal server error' }, { status: 500 })
   }

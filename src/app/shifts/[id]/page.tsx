@@ -427,7 +427,12 @@ export default function ShiftDetailPage({ params }: { params: { id: string } }) 
   const shiftCommence = Date.now() >= startMoment.getTime()
 
   const estPaye = shift.invoice?.status === 'PAID'
-  const peutModifier = role === 'HORECA' && shift.status === 'OPEN' && !shift.chosenKokId
+  // OPEN : modifiable par l'horeca. EXPIRED : seul l'admin peut le réactiver (nouvelle date) ;
+  // l'horeca doit reposter une annonce (c'est ce que dit l'e-mail de relance).
+  const peutModifier = !shift.chosenKokId && (
+    (role === 'HORECA' && shift.status === 'OPEN') ||
+    (role === 'ADMIN' && (shift.status === 'OPEN' || shift.status === 'EXPIRED'))
+  )
   const aujourdhui = new Date(new Date().toDateString())
   const fini = new Date(shift.date) < aujourdhui
   const adresse = [shift.locationStreet, shift.locationPostal, shift.locationCity].filter(Boolean).join(', ')
@@ -755,6 +760,16 @@ export default function ShiftDetailPage({ params }: { params: { id: string } }) 
                     >
                       {t('share_whatsapp')}
                     </a>
+                  </div>
+                )}
+                {shift.status === 'EXPIRED' && (role === 'HORECA' || role === 'ADMIN') && (
+                  <div style={{ marginTop: 14, background: '#f3f4f6', border: '1.5px solid #e5e7eb', borderRadius: 14, padding: '12px 16px' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: 8, fontWeight: 700, fontSize: 13.5, color: '#6b7280' }}>
+                      <Ico n="clock" s={15} c="#6b7280" /> {t('shift_expired')}
+                    </div>
+                    <p style={{ margin: '5px 0 0', fontSize: 13, color: '#6b7280', lineHeight: 1.5 }}>
+                      {t(role === 'ADMIN' ? 'shift_expired_hint_admin' : 'shift_expired_hint')}
+                    </p>
                   </div>
                 )}
                 {peutModifier && (

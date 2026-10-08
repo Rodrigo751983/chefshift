@@ -97,8 +97,15 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       favoriKokIds = favs.map((f) => f.kokId)
     }
 
+    // Statut virtuel : OPEN + date passée + sans chef = EXPIRED (rien en base)
+    const aujourdhui = new Date(new Date().toDateString())
+    const statutVirtuel =
+      shift.status === 'OPEN' && !shift.chosenKokId && new Date(shift.date) < aujourdhui
+        ? 'EXPIRED'
+        : shift.status
+
     return NextResponse.json({
-      shift: { ...shift, applications: applicationsVisibles, eind },
+      shift: { ...shift, status: statutVirtuel, applications: applicationsVisibles, eind },
       favoriKokIds,
     })
   } catch (error) {
@@ -106,19 +113,26 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
   }
 }
 
-// PUT : modifier un shift (uniquement si ouvert et aucun chef choisi)
+// PUT : modifier un shift.
+// - Horeca : uniquement son propre shift OPEN, sans chef choisi.
+// - Admin  : tout shift OPEN, et SEUL l'admin peut modifier un shift EXPIRED
+//            (prolonger la date le réactive). L'horeca doit reposter une annonce.
 export async function PUT(req: NextRequest, { params }: { params: { id: string } }) {
   try {
     const session = await getServerSession(authOptions)
-    if (!session || session.user.role !== 'HORECA') {
+    if (!session || (session.user.role !== 'HORECA' && session.user.role !== 'ADMIN')) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
     }
+    const estAdmin = session.user.role === 'ADMIN'
 
     const shift = await prisma.shift.findUnique({ where: { id: params.id } })
-    if (!shift || shift.horecaId !== session.user.id) {
+    if (!shift || (!estAdmin && shift.horecaId !== session.user.id)) {
       return NextResponse.json({ error: 'Not found' }, { status: 404 })
     }
-    if (shift.status !== 'OPEN' || shift.chosenKokId) {
+    if (shift.chosenKokId) {
+      return NextResponse.json({ error: 'Shift can no longer be edited' }, { status: 400 })
+    }
+    if (shift.status !== 'OPEN' && !(estAdmin && shift.status === 'EXPIRED')) {
       return NextResponse.json({ error: 'Shift can no longer be edited' }, { status: 400 })
     }
 
@@ -165,6 +179,9 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
         breakMinutes: pauzeMin,
         isUrgent: !!isUrgent || pct > 0,
         spoedtoeslagPct: pct,
+        // Réactivation : un shift EXPIRED modifié repasse OPEN ; si la date
+        // reste passée, le statut virtuel EXPIRED reprend le relais à l'affichage.
+        status: 'OPEN',
       },
     })
 
