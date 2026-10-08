@@ -49,7 +49,7 @@ export async function GET(req: NextRequest) {
     }
 
     if (vue === 'shifts') {
-      const shifts = await prisma.shift.findMany({
+      const shiftsBruts = await prisma.shift.findMany({
         take: 300,
         orderBy: [{ date: 'desc' }],
         include: {
@@ -58,6 +58,13 @@ export async function GET(req: NextRequest) {
           _count: { select: { applications: true } },
         },
       })
+      // Statut virtuel, identique à /api/shifts : un shift OPEN, date passée,
+      // sans chef choisi = EXPIRED. Rien n'est écrit en base : si la date est
+      // prolongée, le shift redevient OPEN automatiquement.
+      const aujourdhui = new Date(new Date().toDateString())
+      const shifts = shiftsBruts.map((s) =>
+        s.status === 'OPEN' && !s.chosenKokId && new Date(s.date) < aujourdhui ? { ...s, status: 'EXPIRED' as const } : s
+      )
       return NextResponse.json({ shifts })
     }
 
@@ -102,7 +109,7 @@ export async function GET(req: NextRequest) {
       prisma.invoice.aggregate({ where: { status: 'PAID' }, _sum: { amountInclVat: true } }),
     ])
 
-    const recentShifts = await prisma.shift.findMany({
+    const recentShiftsBruts = await prisma.shift.findMany({
       take: 60,
       orderBy: [{ date: 'desc' }],
       include: {
@@ -111,6 +118,13 @@ export async function GET(req: NextRequest) {
         _count: { select: { applications: true } },
       },
     })
+
+    // Statut virtuel, identique à /api/shifts : OPEN + date passée + sans
+    // chef choisi = EXPIRED (rien d'écrit en base).
+    const aujourdhui = new Date(new Date().toDateString())
+    const recentShifts = recentShiftsBruts.map((s) =>
+      s.status === 'OPEN' && !s.chosenKokId && new Date(s.date) < aujourdhui ? { ...s, status: 'EXPIRED' as const } : s
+    )
 
     return NextResponse.json({
       stats: { totalUsers, totalHoreca, totalKoks, totalShifts, totalInvoices, totalRevenue: (revenue._sum.amountInclVat || 0) / 100 },

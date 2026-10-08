@@ -36,6 +36,7 @@ const STATUT: Record<string, { bg: string; fg: string }> = {
   CONFIRMED: { bg: '#dcfce7', fg: '#15803d' },
   COMPLETED: { bg: '#e0e7ff', fg: '#3730a3' },
   CANCELLED: { bg: '#fee2e2', fg: '#b91c1c' },
+  EXPIRED: { bg: '#fdf0dc', fg: '#8a5b1e' },
   CLOSED: { bg: '#f1f0eb', fg: '#8a8676' },
 }
 
