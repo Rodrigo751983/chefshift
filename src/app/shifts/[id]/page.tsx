@@ -148,6 +148,7 @@ export default function ShiftDetailPage({ params }: { params: { id: string } }) 
   const [pauzeMin, setPauzeMin] = useState('30')
   const [eindEnvoi, setEindEnvoi] = useState(false)
   const [bevestigEnvoi, setBevestigEnvoi] = useState(false)
+  const [bevestigMsg, setBevestigMsg] = useState('')
   // Contestation de l'heure de fin
   const [betwistOuvert, setBetwistOuvert] = useState(false)
   const [betwistTijd, setBetwistTijd] = useState('')
@@ -310,12 +311,33 @@ export default function ShiftDetailPage({ params }: { params: { id: string } }) 
   async function bevestigEind() {
     if (!shift) return
     setBevestigEnvoi(true)
+    setBevestigMsg('')
+    // Si le chef a déclaré son heure de fin, l'API refuse qu'on l'écrase :
+    // on confirme SA déclaration (body vide). Pour proposer une autre heure,
+    // il faut passer par « Andere tijd voorstellen » (contre-proposition).
+    let body: Record<string, string> = {}
+    if (shift.eind) {
+      const declaree = versChamp(shift.eind.reportedEnd)
+      if (role !== 'ADMIN' && eindInvoer && eindInvoer !== declaree) {
+        setBevestigMsg(t('end_use_dispute'))
+        setBevestigEnvoi(false)
+        return
+      }
+    } else {
+      body = { endTime: eindInvoer }
+    }
     const res = await fetch(`/api/shifts/${id}/eindtijd/confirm`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ endTime: eindInvoer }),
+      body: JSON.stringify(body),
     })
-    if (res.ok) await charger()
+    if (res.ok) {
+      await charger()
+    } else {
+      // Ne plus échouer en silence : afficher la raison renvoyée par l'API
+      const d = await res.json().catch(() => ({}))
+      setBevestigMsg(d.error || 'Er ging iets mis')
+    }
     setBevestigEnvoi(false)
   }
 
@@ -1051,6 +1073,10 @@ export default function ShiftDetailPage({ params }: { params: { id: string } }) 
                     </button>
                   )}
                 </div>
+
+                {bevestigMsg && (
+                  <p style={{ marginTop: 12, marginBottom: 0, fontSize: 13.5, fontWeight: 700, color: '#b91c1c' }}>{bevestigMsg}</p>
+                )}
 
                 {/* Contre-proposition deja envoyee : en attente du chef */}
                 {shift.eind?.disputedEnd && !shift.eind.refusedAt && (
