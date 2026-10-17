@@ -24,6 +24,33 @@ export default function AdminChefsPage() {
   const { t, lang } = useT()
   const [items, setItems] = useState<C[] | null>(null)
   const [q, setQ] = useState('')
+  // Liens de payout générés à la demande (lien Stripe expiré chez le chef, etc.)
+  const [liens, setLiens] = useState<Record<string, string>>({})
+  const [lienEnvoi, setLienEnvoi] = useState('')
+  const [copie, setCopie] = useState('')
+
+  async function genererLienPayout(kokId: string) {
+    setLienEnvoi(kokId)
+    try {
+      const res = await fetch('/api/admin/connect', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ kokId }),
+      })
+      const data = await res.json().catch(() => ({}))
+      if (res.ok && data.url) setLiens((l) => ({ ...l, [kokId]: data.url }))
+    } catch {}
+    setLienEnvoi('')
+  }
+
+  function copierLien(kokId: string) {
+    const url = liens[kokId]
+    if (!url) return
+    navigator.clipboard.writeText(url).then(() => {
+      setCopie(kokId)
+      setTimeout(() => setCopie(''), 2000)
+    }).catch(() => {})
+  }
 
   useEffect(() => {
     fetch('/api/admin?vue=chefs')
@@ -86,7 +113,38 @@ export default function AdminChefsPage() {
                   <span style={{ fontSize: 12.5, color: 'hsl(var(--muted-foreground))', fontWeight: 600 }}>
                     {t('admin_since')} {new Date(c.createdAt).toLocaleDateString(locale, { day: 'numeric', month: 'short', year: 'numeric' })}
                   </span>
+                  <button
+                    type="button"
+                    onClick={() => genererLienPayout(c.id)}
+                    disabled={lienEnvoi === c.id}
+                    className="cs-btn"
+                    style={{
+                      background: 'linear-gradient(135deg,#647a55,#46553c)', color: '#fff', border: 'none',
+                      borderRadius: 10, padding: '8px 14px', fontWeight: 700, fontSize: 12.5,
+                      cursor: lienEnvoi === c.id ? 'wait' : 'pointer', opacity: lienEnvoi === c.id ? 0.7 : 1,
+                    }}
+                  >
+                    {lienEnvoi === c.id ? t('form_loading') : t('admin_payout_btn')}
+                  </button>
                 </div>
+                {liens[c.id] && (
+                  <div style={{ flexBasis: '100%', display: 'flex', gap: 8, alignItems: 'center', marginTop: 4 }}>
+                    <input
+                      readOnly
+                      value={liens[c.id]}
+                      onFocus={(e) => e.target.select()}
+                      style={{ flex: 1, minWidth: 0, padding: 9, border: '1.5px solid #e2e6d7', borderRadius: 10, fontSize: 12.5, background: 'hsl(var(--card))', color: 'hsl(var(--foreground))' }}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => copierLien(c.id)}
+                      className="cs-btn"
+                      style={{ background: 'none', border: '1.5px solid #dfe4d4', borderRadius: 10, padding: '8px 14px', fontWeight: 700, fontSize: 12.5, color: 'hsl(var(--foreground))', cursor: 'pointer', whiteSpace: 'nowrap' }}
+                    >
+                      {copie === c.id ? t('admin_payout_copied') : t('admin_payout_copy')}
+                    </button>
+                  </div>
+                )}
               </div>
             )
           })

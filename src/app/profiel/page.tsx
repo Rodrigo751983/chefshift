@@ -56,6 +56,8 @@ export default function ProfielPage() {
   const [connectStatus, setConnectStatus] = useState<'none' | 'pending' | 'ok'>('none')
   const [connectEnvoi, setConnectEnvoi] = useState(false)
   const [connectFout, setConnectFout] = useState('')
+  // 'retry' = le lien Stripe precedent a expire ; 'ok' = retour apres mise a jour reussie
+  const [connectMsg, setConnectMsg] = useState<'' | 'retry' | 'ok'>('')
   const [exps, setExps] = useState<Exp[]>([])
 
   useEffect(() => {
@@ -65,6 +67,9 @@ export default function ProfielPage() {
         window.location.href = '/login'
         return
       }
+      // Retour depuis Stripe : ?connect=retry (lien expiré) ou ?connect=ok (terminé)
+      const connectParam = new URLSearchParams(window.location.search).get('connect')
+      if (connectParam === 'retry' || connectParam === 'ok') setConnectMsg(connectParam)
       const [res, resConnect] = await Promise.all([
         fetch('/api/profile'),
         fetch('/api/connect'),
@@ -364,6 +369,16 @@ export default function ProfielPage() {
           {/* Stripe Connect */}
           <div style={{ borderTop: '1px dashed #dfe4d4', paddingTop: 18 }}>
             <h3 style={{ fontSize: 15, fontWeight: 800, marginBottom: 6 }}>{t('connect_title')}</h3>
+            {connectMsg === 'retry' && (
+              <p style={{ fontSize: 13.5, color: '#92400e', background: '#fffbeb', border: '1px solid #fde68a', padding: '10px 14px', borderRadius: 10, fontWeight: 600, lineHeight: 1.5, marginBottom: 12 }}>
+                {t('connect_retry_banner')}
+              </p>
+            )}
+            {connectMsg === 'ok' && (
+              <p style={{ fontSize: 13.5, color: '#15803d', background: '#f0fdf4', border: '1px solid #bbf7d0', padding: '10px 14px', borderRadius: 10, fontWeight: 600, lineHeight: 1.5, marginBottom: 12 }}>
+                {t('connect_ok_banner')}
+              </p>
+            )}
             {connectStatus === 'ok' ? (
               <p style={{ display: 'flex', alignItems: 'center', gap: 7, fontSize: 14, color: '#15803d', fontWeight: 700 }}>
                 <Ico n="check" s={15} /> {t('connect_ok')}
